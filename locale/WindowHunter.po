@@ -1,0 +1,39 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: common.rs_application
+msgid "Application"
+msgstr ""
+
+#: common.rs_class
+msgid "Class"
+msgstr ""
+
+#: common.rs_id
+msgid "ID"
+msgstr ""
+
+#: common.rs_text
+msgid "Text"
+msgstr ""
+
+#: common.rs_version
+msgid "Version: "
+msgstr ""
+
+#: common.rs_visible
+msgid "Visible"
+msgstr ""
+
+#: tfrmmain.btnhidden.hint
+msgid "Show Hidden Window"
+msgstr ""
+
+#: tfrmmain.btnrefresh.hint
+msgid "Refresh Window List"
+msgstr ""
+
+#: tfrmmain.caption
+msgid "Window Hunter"
+msgstr ""
+

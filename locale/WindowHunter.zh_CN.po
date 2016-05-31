@@ -1,0 +1,49 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: zh_CN\n"
+
+#: common.rs_application
+msgid "Application"
+msgstr "应用程序"
+
+#: common.rs_class
+msgid "Class"
+msgstr "类名"
+
+#: common.rs_id
+msgid "ID"
+msgstr "编号"
+
+#: common.rs_text
+msgid "Text"
+msgstr "文本"
+
+#: common.rs_version
+msgid "Version: "
+msgstr "版本："
+
+#: common.rs_visible
+msgid "Visible"
+msgstr "可见"
+
+#: tfrmmain.btnhidden.hint
+msgid "Show Hidden Window"
+msgstr "显示隐藏窗口"
+
+#: tfrmmain.btnrefresh.hint
+msgid "Refresh Window List"
+msgstr "刷新窗口列表"
+
+#: tfrmmain.caption
+msgid "Window Hunter"
+msgstr "窗口猎手"
