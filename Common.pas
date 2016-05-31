@@ -15,6 +15,9 @@ resourcestring
   RS_APPLICATION = 'Application';
   RS_VERSION = 'Version: ';
 
+const
+  CUR_LOCATE = 1;
+
 function GetSelfVersion: String;
 
 implementation

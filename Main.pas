@@ -5,8 +5,8 @@ unit Main;
 interface
 
 uses
-  JwaWindows, Classes, SysUtils, FileUtil, Forms, Controls, Graphics,
-  Dialogs, ComCtrls, VirtualTrees, Math, Common;
+  JwaWindows, Windows, Classes, SysUtils, FileUtil, Forms, Controls,
+  Graphics, Dialogs, ComCtrls, VirtualTrees, Math, Common;
 
 type
 
@@ -17,9 +17,14 @@ type
     StbMain: TStatusBar;
     TlbMain: TToolBar;
     BtnRefresh: TToolButton;
+    BtnLocate: TToolButton;
     ToolButton1: TToolButton;
     BtnHidden: TToolButton;
     VtvWindow: TVirtualStringTree;
+    procedure BtnLocateMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure BtnLocateMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure BtnRefreshClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -34,6 +39,11 @@ type
       Column: TColumnIndex; TextType: TVSTTextType; var CellText: String);
   private
     procedure ListWindowTree(ParentNode: PVirtualNode; hWindow: HWND);
+    function GetTopWindow(hWindow: HWND): HWND;
+    function FindChildNode(ParentNode: PVirtualNode;
+      hWindow: HWND): PVirtualNode;
+    function FindDescendant(ParentNode: PVirtualNode;
+      hWindow: HWND): PVirtualNode;
     { private declarations }
   public
     { public declarations }
@@ -63,23 +73,62 @@ var
   hWindow: HWND;
 begin
   VtvWindow.Clear;
-  hWindow := GetWindow(Application.MainFormHandle, GW_HWNDFIRST);
+  hWindow := GetWindow(FindWindow(nil, nil), GW_HWNDFIRST);
   while (hWindow <> 0) do
   begin
-    ListWindowTree(nil, hWindow);
+    if (hWindow <> Application.MainFormHandle) then
+      ListWindowTree(nil, hWindow);
     hWindow := GetWindow(hWindow, GW_HWNDNEXT);
+  end;
+end;
+
+procedure TFrmMain.BtnLocateMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  Screen.Cursor := CUR_LOCATE;
+end;
+
+procedure TFrmMain.BtnLocateMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  Location: TPoint;
+  hWindow: HWND;
+  hTopWin: HWND;
+  WinNode: PVirtualNode;
+begin
+  Screen.Cursor := crDefault;
+  Location := BtnLocate.ClientToScreen(Point(X, Y));
+  hWindow := WindowFromPoint(Location);
+  hTopWin := GetTopWindow(hWindow);
+  if (hTopWin = 0) then
+    Exit;
+  if (hTopWin = Application.MainFormHandle) then
+    Exit;
+  WinNode := FindChildNode(nil, hTopWin);
+  if (WinNode = nil) then
+  begin
+    ListWindowTree(nil, hTopWin);
+    WinNode := VtvWindow.GetLastChild(nil);
+  end;
+  WinNode := FindDescendant(WinNode, hWindow);
+  if (WinNode <> nil) then
+  begin
+    VtvWindow.ScrollIntoView(WinNode, False);
+    VtvWindow.Selected[WinNode] := True;
   end;
 end;
 
 procedure TFrmMain.FormCreate(Sender: TObject);
 begin
   VtvWindow.NodeDataSize:= SizeOf(TWindowData);
+  BtnRefresh.Click;
   VtvWindow.Header.Columns[0].Text := RS_ID;
   VtvWindow.Header.Columns[1].Text := RS_VISIBLE;
   VtvWindow.Header.Columns[2].Text := RS_CLASS;
   VtvWindow.Header.Columns[3].Text := RS_TEXT;
   VtvWindow.Header.Columns[4].Text := RS_APPLICATION;
   StbMain.Panels[1].Text := RS_VERSION + GetSelfVersion;
+  Screen.Cursors[CUR_LOCATE] := LoadCursor(HINSTANCE, 'LOCATE');
 end;
 
 procedure TFrmMain.FormResize(Sender: TObject);
@@ -185,6 +234,61 @@ begin
   begin
     ListWindowTree(WinNode, hWindow);
     hWindow := GetWindow(hWindow, GW_HWNDNEXT);
+  end;
+end;
+
+function TFrmMain.GetTopWindow(hWindow: HWND): HWND;
+begin
+  Result := hWindow;
+  while (True) do
+  begin
+    hWindow := GetAncestor(Result, GA_PARENT);
+    if (hWindow = GetDesktopWindow) then
+      Break;
+    if (not IsWindowVisible(hWindow)) then
+      Break;
+    Result := hWindow;
+  end;
+end;
+
+function TFrmMain.FindChildNode(ParentNode: PVirtualNode;
+  hWindow: HWND): PVirtualNode;
+var
+  Child: PVirtualNode;
+  Data: PWindowData;
+begin
+  Child := VtvWindow.GetFirstChild(ParentNode);
+  Result := nil;
+  while (Child <> nil) do
+  begin
+    Data := VtvWindow.GetNodeData(Child);
+    if (hWindow = Data^.hWindow) then
+    begin
+      Result := Child;
+      Exit;
+    end;
+    Child := VtvWindow.GetNextVisible(Child, False);
+  end;
+end;
+
+function TFrmMain.FindDescendant(ParentNode: PVirtualNode;
+  hWindow: HWND): PVirtualNode;
+var
+  Child: PVirtualNode;
+  Data: PWindowData;
+begin
+  Data := VtvWindow.GetNodeData(ParentNode);
+  if (Data^.hWindow = hWindow) then
+  begin
+    Result := ParentNode;
+    Exit;
+  end;
+  Result := nil;
+  Child := VtvWindow.GetFirstChild(ParentNode);
+  while (Child <> nil) and (Result = nil) do
+  begin
+    Result := FindDescendant(Child, hWindow);
+    Child := VtvWindow.GetNextSibling(Child);
   end;
 end;
 

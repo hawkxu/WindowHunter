@@ -29,6 +29,10 @@ msgstr ""
 msgid "Show Hidden Window"
 msgstr ""
 
+#: tfrmmain.btnlocate.hint
+msgid "Locate Window"
+msgstr ""
+
 #: tfrmmain.btnrefresh.hint
 msgid "Refresh Window List"
 msgstr ""

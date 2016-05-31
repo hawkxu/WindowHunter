@@ -40,6 +40,10 @@ msgstr "可见"
 msgid "Show Hidden Window"
 msgstr "显示隐藏窗口"
 
+#: tfrmmain.btnlocate.hint
+msgid "Locate Window"
+msgstr "定位窗口"
+
 #: tfrmmain.btnrefresh.hint
 msgid "Refresh Window List"
 msgstr "刷新窗口列表"
